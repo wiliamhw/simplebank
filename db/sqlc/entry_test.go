@@ -14,7 +14,7 @@ func createRandomEntry(t *testing.T) Entry {
 	account := createRandomAccount(t)
 	arg := CreateEntryParams{
 		AccountID: account.ID,
-		Amount: util.RandomInt(-1000, 1000),
+		Amount:    util.RandomInt(-1000, 1000),
 	}
 
 	entry, err := testQueries.CreateEntry(context.Background(), arg)
@@ -50,7 +50,7 @@ func TestUpdateEntry(t *testing.T) {
 	entry1 := createRandomEntry(t)
 
 	arg := UpdateEntryParams{
-		ID: entry1.ID,
+		ID:     entry1.ID,
 		Amount: util.RandomInt(-1000, 1000),
 	}
 	entry2, err := testQueries.UpdateEntry(context.Background(), arg)
@@ -80,7 +80,7 @@ func TestListEntries(t *testing.T) {
 	}
 
 	arg := ListEntriesParams{
-		Limit: 5,
+		Limit:  5,
 		Offset: 5,
 	}
 
