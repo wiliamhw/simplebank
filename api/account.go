@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,7 +10,7 @@ import (
 )
 
 type createAccountRequest struct {
-	Owner    string `json:"owner" binding:"required"`
+	Owner    string `json:"owner" binding:"required,alphanum"`
 	Currency string `json:"currency" binding:"required,oneof=USD EUR"`
 }
 
@@ -36,7 +37,7 @@ func (server *Server) createAccount(ctx *gin.Context) {
 }
 
 type getAccountRequest struct {
-	ID int64 `uri:"id" binding:"required,min=1"`
+	ID int64 `uri:"id" binding:"required,numeric,min=1"`
 }
 
 func (server *Server) getAccount(ctx *gin.Context) {
@@ -59,8 +60,8 @@ func (server *Server) getAccount(ctx *gin.Context) {
 }
 
 type listAccountRequest struct {
-	PageID   int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
+	PageID   int32 `form:"page_id" binding:"required,numeric,min=1"`
+	PageSize int32 `form:"page_size" binding:"required,numeric,min=5,max=10"`
 }
 
 func (server *Server) listAccount(ctx *gin.Context) {
@@ -81,4 +82,63 @@ func (server *Server) listAccount(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, accounts)
+}
+
+type addAccountBalanceRequest struct {
+	addAccountBalanceRequestUri
+	addAccountBalanceRequestForm
+}
+
+type addAccountBalanceRequestUri struct {
+	ID int64 `uri:"id" binding:"required,numeric,min=1"`
+}
+
+type addAccountBalanceRequestForm struct {
+	Amount int64 `form:"amount" binding:"required,numeric"`
+}
+
+func (server *Server) addAccountBalance(ctx *gin.Context) {
+	var req addAccountBalanceRequest
+	if err := ctx.ShouldBindUri(&req.addAccountBalanceRequestUri); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	if err := ctx.ShouldBindJSON(&req.addAccountBalanceRequestForm); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	arg := db.AddAccountBalanceParams{
+		ID:     req.ID,
+		Amount: req.Amount,
+	}
+
+	account, err := server.store.AddAccountBalance(ctx, arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, account)
+}
+
+type deleteAccountRequest struct {
+	ID int64 `uri:"id" binding:"required,numeric,min=1"`
+}
+
+func (server *Server) deleteAccount(ctx *gin.Context) {
+	var req deleteAccountRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	err := server.store.DeleteAccount(ctx, req.ID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(
+		http.StatusOK,
+		fmt.Sprintf("Account with id %v has been deleted", req.ID),
+	)
 }
