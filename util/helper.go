@@ -2,7 +2,7 @@ package util
 
 import "reflect"
 
-func InArray(val interface{}, array interface{}) (exist bool) {
+func InArray(array interface{}, val interface{}) (exist bool) {
 	values := reflect.ValueOf(array)
 
 	if reflect.TypeOf(array).Kind() == reflect.Slice || values.Len() > 0 {
