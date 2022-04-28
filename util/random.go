@@ -8,8 +8,6 @@ import (
 
 const alphabet = "abcdefghijklmnoprstuvwxyz"
 
-var currencies = [...]string{"EUR", "USD"}
-
 // Constructor in Go. Called first before other functions.
 func init() {
 	rand.Seed(time.Now().UnixNano())
