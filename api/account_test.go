@@ -17,7 +17,7 @@ import (
 	"github.com/wiliamhw/simplebank/util"
 )
 
-const baseURI = "/accounts"
+const accountURI = "/accounts"
 
 func randomAccount(t *testing.T) db.Account {
 	return db.Account{
@@ -26,35 +26,6 @@ func randomAccount(t *testing.T) db.Account {
 		Balance:  util.RandomMoney(),
 		Currency: util.RandomCurrency(),
 	}
-}
-
-type baseTestCase struct {
-	name          string
-	buildStubs    func(store *mockdb.MockStore) // Assert DB query calls.
-	checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
-}
-
-func (btc *baseTestCase) runTestCase(
-	t *testing.T,
-	getRequest func() (*http.Request, error),
-) {
-	t.Run(btc.name, func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		store := mockdb.NewMockStore(ctrl)
-		btc.buildStubs(store)
-
-		// Start test server and send request
-		server := NewServer(store)
-		recorder := httptest.NewRecorder()
-
-		request, err := getRequest()
-		require.NoError(t, err)
-
-		server.router.ServeHTTP(recorder, request)
-		btc.checkResponse(t, recorder)
-	})
 }
 
 func TestListAccountAPI(t *testing.T) {
@@ -137,7 +108,7 @@ func TestListAccountAPI(t *testing.T) {
 		tc := testCases[i]
 
 		getRequest := func() (*http.Request, error) {
-			request, err := http.NewRequest(http.MethodGet, baseURI, nil)
+			request, err := http.NewRequest(http.MethodGet, accountURI, nil)
 			if err != nil {
 				return nil, err
 			}
@@ -227,7 +198,7 @@ func TestGetAccountAPI(t *testing.T) {
 		tc := testCases[i]
 
 		getRequest := func() (*http.Request, error) {
-			url := fmt.Sprintf("%v/%v", baseURI, tc.accountId)
+			url := fmt.Sprintf("%v/%v", accountURI, tc.accountId)
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			if err != nil {
 				return nil, err
@@ -325,7 +296,7 @@ func TestCreateAccountAPI(t *testing.T) {
 			}
 
 			request, err := http.NewRequest(
-				http.MethodPost, baseURI, bytes.NewReader(data),
+				http.MethodPost, accountURI, bytes.NewReader(data),
 			)
 			if err != nil {
 				return nil, err
@@ -454,7 +425,7 @@ func TestUpdateAccountAPI(t *testing.T) {
 				return nil, err
 			}
 
-			url := fmt.Sprintf("%v/%v", baseURI, tc.req.uri.ID)
+			url := fmt.Sprintf("%v/%v", accountURI, tc.req.uri.ID)
 			request, err := http.NewRequest(
 				http.MethodPatch, url, bytes.NewReader(data),
 			)
@@ -577,7 +548,7 @@ func TestDeleteAccountAPI(t *testing.T) {
 		tc := testCases[i]
 
 		getRequest := func() (*http.Request, error) {
-			url := fmt.Sprintf("%v/%v", baseURI, tc.accountId)
+			url := fmt.Sprintf("%v/%v", accountURI, tc.accountId)
 			request, err := http.NewRequest(http.MethodDelete, url, nil)
 			if err != nil {
 				return nil, err
