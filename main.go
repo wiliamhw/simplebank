@@ -13,18 +13,21 @@ import (
 func main() {
 	config, err := util.LoadConfig(".")
 	if err != nil {
-		log.Fatalf("Cannot load config: %v", err)
+		log.Fatalf("cannot load config: %v", err)
 	}
 
 	conn, err := sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
-		log.Fatalf("Cannot connect to db: %v", err)
+		log.Fatalf("cannot connect to db: %v", err)
 	}
 
 	store := db.NewStore(conn)
-	server := api.NewServer(store)
+	server, err := api.NewServer(config, store)
+	if err != nil {
+		log.Fatalf("cannot create server: %v", err)
+	}
 
 	if err := server.Start(config.ServerAddress); err != nil {
-		log.Fatalf("Cannot start server: %v", err)
+		log.Fatalf("cannot start server: %v", err)
 	}
 }

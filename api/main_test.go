@@ -5,12 +5,27 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	mockdb "github.com/wiliamhw/simplebank/db/mock"
+	db "github.com/wiliamhw/simplebank/db/sqlc"
+	"github.com/wiliamhw/simplebank/util"
 )
+
+func newTestServer(t *testing.T, store db.Store) *Server {
+	config := util.Config{
+		TokenSymmetricKey:   util.RandomString(32),
+		AccessTokenDuration: time.Minute,
+	}
+
+	server, err := NewServer(config, store)
+	require.NoError(t, err)
+
+	return server
+}
 
 // Will be run before or after any other test functions.
 func TestMain(m *testing.M) {
@@ -36,7 +51,7 @@ func (btc *baseTestCase) runTestCase(
 		btc.buildStubs(store)
 
 		// Start test server and send request
-		server := NewServer(store)
+		server := newTestServer(t, store)
 		recorder := httptest.NewRecorder()
 
 		request, err := getRequest()
