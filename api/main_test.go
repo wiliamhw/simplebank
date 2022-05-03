@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 	mockdb "github.com/wiliamhw/simplebank/db/mock"
 	db "github.com/wiliamhw/simplebank/db/sqlc"
+	"github.com/wiliamhw/simplebank/token"
 	"github.com/wiliamhw/simplebank/util"
 )
 
@@ -36,6 +37,7 @@ func TestMain(m *testing.M) {
 type baseTestCase struct {
 	name          string
 	buildStubs    func(store *mockdb.MockStore) // Assert DB query calls.
+	setupAuth     func(t *testing.T, request *http.Request, tokenMaker token.Maker)
 	checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
 }
 
@@ -57,6 +59,7 @@ func (btc *baseTestCase) runTestCase(
 		request, err := getRequest()
 		require.NoError(t, err)
 
+		btc.setupAuth(t, request, server.tokenMaker)
 		server.router.ServeHTTP(recorder, request)
 		btc.checkResponse(t, recorder)
 	})
