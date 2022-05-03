@@ -59,7 +59,9 @@ func (btc *baseTestCase) runTestCase(
 		request, err := getRequest()
 		require.NoError(t, err)
 
-		btc.setupAuth(t, request, server.tokenMaker)
+		if btc.setupAuth != nil {
+			btc.setupAuth(t, request, server.tokenMaker)
+		}
 		server.router.ServeHTTP(recorder, request)
 		btc.checkResponse(t, recorder)
 	})

@@ -67,6 +67,13 @@ func EqCreateUserParams(arg db.CreateUserParams, password string) gomock.Matcher
 func TestCreateUserAPI(t *testing.T) {
 	user, password := randomUser(t)
 
+	defaultBody := gin.H{
+		"username":  user.Username,
+		"password":  password,
+		"full_name": user.FullName,
+		"email":     user.Email,
+	}
+
 	testCases := []struct {
 		base baseTestCase
 		body gin.H
@@ -91,12 +98,7 @@ func TestCreateUserAPI(t *testing.T) {
 					requireBodyMatchUser(t, recorder.Body, user)
 				},
 			},
-			body: gin.H{
-				"username":  user.Username,
-				"password":  password,
-				"full_name": user.FullName,
-				"email":     user.Email,
-			},
+			body: defaultBody,
 		},
 		{
 			base: baseTestCase{
@@ -111,12 +113,7 @@ func TestCreateUserAPI(t *testing.T) {
 					require.Equal(t, http.StatusInternalServerError, recorder.Code)
 				},
 			},
-			body: gin.H{
-				"username":  user.Username,
-				"password":  password,
-				"full_name": user.FullName,
-				"email":     user.Email,
-			},
+			body: defaultBody,
 		},
 		{
 			base: baseTestCase{
@@ -131,12 +128,7 @@ func TestCreateUserAPI(t *testing.T) {
 					require.Equal(t, http.StatusForbidden, recorder.Code)
 				},
 			},
-			body: gin.H{
-				"username":  user.Username,
-				"password":  password,
-				"full_name": user.FullName,
-				"email":     user.Email,
-			},
+			body: defaultBody,
 		},
 		{
 			base: baseTestCase{
