@@ -134,6 +134,32 @@ func TestTransferAPI(t *testing.T) {
 		},
 		{
 			base: baseTestCase{
+				name: "CannotTransferToTheSameAccount",
+				setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+					addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user1.Username, time.Minute)
+				},
+				buildStubs: func(store *mockdb.MockStore) {
+					store.EXPECT().
+						GetAccount(gomock.Any(), gomock.Any()).
+						Times(0)
+
+					store.EXPECT().
+						TransferTx(gomock.Any(), gomock.Any()).
+						Times(0)
+				},
+				checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+					require.Equal(t, http.StatusBadRequest, recorder.Code)
+				},
+			},
+			body: gin.H{
+				"from_account_id": account1.ID,
+				"to_account_id":   account1.ID,
+				"amount":          amount,
+				"currency":        util.USD,
+			},
+		},
+		{
+			base: baseTestCase{
 				name: "FromAccountNotFound",
 				setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
 					addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user1.Username, time.Minute)
