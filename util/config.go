@@ -16,10 +16,11 @@ type Config struct {
 	DBUsername   string `mapstructure:"DB_USERNAME"`
 	DBPassword   string `mapstructure:"DB_PASSWORD"`
 
-	AppAddress          string        `mapstructure:"APP_ADDRESS"`
-	AppPort             string        `mapstructure:"APP_PORT"`
-	TokenSymmetricKey   string        `mapstructure:"TOKEN_SYMETRIC_KEY"`
-	AccessTokenDuration time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
+	AppAddress           string        `mapstructure:"APP_ADDRESS"`
+	AppPort              string        `mapstructure:"APP_PORT"`
+	TokenSymmetricKey    string        `mapstructure:"TOKEN_SYMETRIC_KEY"`
+	AccessTokenDuration  time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
+	RefreshTokenDuration time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
 }
 
 // Read configuration from file or environtment variables.
