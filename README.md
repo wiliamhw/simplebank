@@ -101,6 +101,8 @@ This project will provide APIs for the frontend to do following things:
 
 - Access the DB documentation at [this address](https://dbdocs.io/wiliamwijaya1985/simple_bank). Password: `secret`
 
+- The Postman API collection and environtment can be exported using JSON files inside [`doc/postman`](doc/postman/) folder.
+
 ### How to generate code
 
 - Generate schema SQL file with DBML:
@@ -118,7 +120,7 @@ This project will provide APIs for the frontend to do following things:
 - Generate DB mock with gomock:
 
     ```bash
-    make mock
+    make mockdb
     ```
 
 - Create a new db migration:

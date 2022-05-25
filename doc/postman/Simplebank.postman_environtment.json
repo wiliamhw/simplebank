@@ -1,0 +1,18 @@
+{
+    "id": "79e2aeee-aea8-4770-98d7-a03d82b28c05",
+    "name": "Simplebank",
+    "values": [
+        {
+            "key": "baseUrl",
+            "value": "http://127.0.0.1:8080",
+            "enabled": true,
+            "type": "default"
+        },
+        {
+            "key": "accessToken",
+            "value": "",
+            "enabled": true,
+            "type": "default"
+        }
+    ]
+}
