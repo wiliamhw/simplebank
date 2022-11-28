@@ -12,7 +12,7 @@ WORKDIR /app
 COPY --from=builder /app/main .
 COPY --from=builder /app/migrate ./migrate
 COPY /scripts .
-COPY app.env .
+COPY .env .
 COPY db/migration ./db/migration
 
 EXPOSE 8080
